@@ -1,37 +1,44 @@
 import Fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
-import fastifyHelmet from '@fastify/helmet';
-import dotenv from 'dotenv';
 import { dreamRoutes } from './routes/dreamRoutes';
-import { logger } from './utils/logger';
+import { authRoutes } from './routes/auth';
 
-// Load environment variables
-dotenv.config();
+const fastify = Fastify({ 
+  logger: true
+});
 
-const fastify = Fastify({ logger: false });
 const port = Number(process.env.PORT) || 3000;
 
 // Middleware
-fastify.register(fastifyHelmet);
-fastify.register(fastifyCors);
+fastify.register(fastifyCors, {
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'],
+  credentials: true
+});
 
 // Routes
 fastify.register(dreamRoutes, { prefix: '/api/dreams' });
+fastify.register(authRoutes, { prefix: '/api/auth' });
+
+// Health check
+fastify.get('/health', async (request, reply) => {
+  return { status: 'ok', timestamp: new Date().toISOString() };
+});
 
 // Error handling
 fastify.setErrorHandler((error, request, reply) => {
-  logger.error(error);
+  fastify.log.error(error);
   reply.status(error.statusCode || 500).send({
-    status: 'error',
-    message: error.message || 'Internal server error',
+    success: false,
+    error: error.message || 'Internal server error',
+    code: 'INTERNAL_ERROR'
   });
 });
 
 // Start server
 fastify.listen({ port, host: '0.0.0.0' }, (err, address) => {
   if (err) {
-    logger.error(err);
+    fastify.log.error(err);
     process.exit(1);
   }
-  logger.info(`Server is running on ${address}`);
+  fastify.log.info(`Server is running on ${address}`);
 }); 
