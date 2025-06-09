@@ -1,10 +1,22 @@
 import Fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
+import Joi from 'joi';
 import { dreamRoutes } from './routes/dreamRoutes';
 import { authRoutes } from './routes/auth';
 
 const fastify = Fastify({ 
   logger: true
+});
+
+// Set up Joi validator compiler
+fastify.setValidatorCompiler(({ schema }) => {
+  return (data: any) => {
+    const result = (schema as any).validate(data);
+    if (result.error) {
+      return { error: result.error };
+    }
+    return { value: result.value };
+  };
 });
 
 const port = Number(process.env.PORT) || 3000;
