@@ -16,11 +16,31 @@ dist/
 build/
 out/
 
+
 # IDE and editor files
 .idea/
 .vscode/
 *.swp
 *.swo
+
+
+# IDE and editor files
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea_modules/
+atlassian-ide-plugin.xml
+
+# VS Code
+.vscode/
+
+# Other editors
+*.swp
+*.swo
+
+# macOS
 .DS_Store
 
 # Logs
