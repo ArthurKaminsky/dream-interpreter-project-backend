@@ -16,6 +16,14 @@ dist/
 build/
 out/
 
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+
 # IDE and editor files
 # IntelliJ IDEA
 .idea/
